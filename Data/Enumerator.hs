@@ -1,8 +1,12 @@
 {-# LANGUAGE Rank2Types #-}
 
 module Data.Enumerator
-    ( -- Enumerators
+    ( EnumeratorM,
+      IterateeM,
+
+      -- Enumerators
       bytesEnum,
+      lazyBytesEnum,
       chunkEnum,
       partialSocketEnum,
       socketEnum,
@@ -13,6 +17,7 @@ module Data.Enumerator
 
 import Control.Monad (liftM)
 import qualified Data.ByteString as S
+import qualified Data.ByteString.Lazy as L
 import qualified Data.ByteString.Char8 as C (unpack)
 import Data.Word (Word8)
 import Network.Socket (Socket)
@@ -36,6 +41,16 @@ bytesEnum bs f seed =
        case seed' of
          Left seed''  -> return seed''
          Right seed'' -> bytesEnum (S.drop blockSize bs) f seed''
+
+
+-- | Enumerates a lazy 'ByteString'.
+lazyBytesEnum :: Monad m => L.ByteString -> EnumeratorM m
+lazyBytesEnum bs f seed = go (L.toChunks bs) f seed
+  where
+    go []     _ sd = return sd
+    go (x:xs) g sd = do
+      sd' <- bytesEnum x g sd
+      go xs g sd'
 
 
 nl :: Word8
