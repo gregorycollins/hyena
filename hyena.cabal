@@ -1,5 +1,5 @@
 name:           hyena
-version:        0.1
+version:        0.1.1
 synopsis:       Simple web application server
 description:
   A simple web application server using iteratees.
@@ -17,8 +17,8 @@ library
     Hyena.Config
     Hyena.Server
     Network.Wai
-  other-modules:
     Data.Enumerator
+  other-modules:
     Hyena.Http
     Hyena.Logging
     Hyena.Parser
